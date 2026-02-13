@@ -1,0 +1,274 @@
+<!doctype html>
+<html lang="da">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>MinProduktivitetsApp</title>
+    <meta
+      name="description"
+      content="MinProduktivitetsApp: lokal-first produktivitetsapp med Neon (Postgres) + lokal LLM (Ollama)."
+    />
+    <style>
+      :root {
+        --bg: #0b1020;
+        --card: #111a33;
+        --text: #e8eeff;
+        --muted: #a9b5d3;
+        --accent: #7c5cff;
+        --accent2: #2ee59d;
+        --border: rgba(255, 255, 255, 0.08);
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica,
+          Arial, "Apple Color Emoji", "Segoe UI Emoji";
+        background: radial-gradient(1200px 700px at 20% 0%, rgba(124, 92, 255, 0.35), transparent 60%),
+          radial-gradient(900px 600px at 80% 10%, rgba(46, 229, 157, 0.18), transparent 55%),
+          var(--bg);
+        color: var(--text);
+        line-height: 1.5;
+      }
+
+      a {
+        color: inherit;
+      }
+
+      .wrap {
+        max-width: 980px;
+        margin: 0 auto;
+        padding: 48px 18px;
+      }
+
+      .hero {
+        display: grid;
+        grid-template-columns: 1.2fr 0.8fr;
+        gap: 18px;
+        align-items: start;
+      }
+
+      @media (max-width: 860px) {
+        .hero {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      .card {
+        border: 1px solid var(--border);
+        background: linear-gradient(180deg, rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0.02));
+        border-radius: 18px;
+        padding: 22px;
+        backdrop-filter: blur(10px);
+      }
+
+      .title {
+        margin: 0;
+        font-size: 38px;
+        letter-spacing: -0.02em;
+      }
+
+      .subtitle {
+        margin: 12px 0 0;
+        color: var(--muted);
+        font-size: 16px;
+      }
+
+      .pillrow {
+        margin-top: 16px;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+      }
+
+      .pill {
+        border: 1px solid var(--border);
+        background: rgba(255, 255, 255, 0.04);
+        color: var(--text);
+        border-radius: 999px;
+        padding: 8px 12px;
+        font-size: 13px;
+      }
+
+      .pill strong {
+        color: var(--accent2);
+        font-weight: 650;
+      }
+
+      .section {
+        margin-top: 16px;
+      }
+
+      h2 {
+        font-size: 16px;
+        margin: 0 0 10px;
+      }
+
+      ul {
+        margin: 0;
+        padding-left: 18px;
+        color: var(--muted);
+      }
+
+      code {
+        background: rgba(0, 0, 0, 0.35);
+        border: 1px solid var(--border);
+        padding: 2px 6px;
+        border-radius: 8px;
+        color: var(--text);
+      }
+
+      pre {
+        background: rgba(0, 0, 0, 0.35);
+        border: 1px solid var(--border);
+        padding: 12px;
+        border-radius: 12px;
+        overflow: auto;
+        color: var(--text);
+      }
+
+      .cta {
+        display: grid;
+        gap: 10px;
+      }
+
+      .btn {
+        display: inline-block;
+        text-decoration: none;
+        border-radius: 12px;
+        padding: 10px 12px;
+        border: 1px solid var(--border);
+        background: rgba(255, 255, 255, 0.04);
+        color: var(--text);
+      }
+
+      .btn.primary {
+        border-color: rgba(124, 92, 255, 0.6);
+        background: rgba(124, 92, 255, 0.18);
+      }
+
+      .foot {
+        margin-top: 18px;
+        color: var(--muted);
+        font-size: 13px;
+      }
+
+      .kicker {
+        font-size: 13px;
+        color: var(--muted);
+        margin-top: 12px;
+      }
+
+      .badge {
+        display: inline-block;
+        font-size: 12px;
+        padding: 3px 10px;
+        border-radius: 999px;
+        border: 1px solid var(--border);
+        background: rgba(255, 255, 255, 0.04);
+        color: var(--muted);
+      }
+
+      .grid2 {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+      }
+
+      @media (max-width: 860px) {
+        .grid2 {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      .note {
+        border-left: 3px solid rgba(124, 92, 255, 0.6);
+        padding-left: 12px;
+        color: var(--muted);
+      }
+
+      .accent {
+        color: var(--accent2);
+      }
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <div class="hero">
+        <div class="card">
+          <div class="badge">v0 (work in progress)</div>
+          <h1 class="title">MinProduktivitetsApp</h1>
+          <p class="subtitle">
+            En lokal-first produktivitetsapp med audit-log (events), Neon (Postgres) og lokal LLM via
+            Ollama. Målet er at skabe en "Hvis jeg kun har 1 time" plan der er konkret, skarp og
+            brugbar.
+          </p>
+
+          <div class="pillrow">
+            <div class="pill"><strong>Data</strong>: Neon (Postgres)</div>
+            <div class="pill"><strong>LLM</strong>: Ollama (lokalt)</div>
+            <div class="pill"><strong>Log</strong>: events (audit)</div>
+            <div class="pill"><strong>Scope</strong>: MVP i små, sikre trin</div>
+          </div>
+
+          <div class="section">
+            <h2>Hvad er klar allerede?</h2>
+            <div class="grid2">
+              <div class="note">
+                <div><span class="accent">Backend runner</span> (lokalt)</div>
+                <div>
+                  Scriptet <code>app/backend/llm_plan.py</code> henter dagens fokus + to-do’s fra Neon,
+                  kalder Ollama og logger svaret som <code>LLM_PLAN_GENERATED</code>.
+                </div>
+              </div>
+              <div class="note">
+                <div><span class="accent">Docs</span></div>
+                <div>
+                  Se projektets docs for vision, data model, token budget og working agreement.
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="section">
+            <h2>Kør lokalt</h2>
+            <pre><code>cd app/backend
+python -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
+python llm_plan.py</code></pre>
+            <div class="kicker">
+              Kræver at du har sat <code>DATABASE_URL</code> i <code>.env</code> og at Ollama kører lokalt.
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <h2>Næste skridt (online)</h2>
+          <div class="cta">
+            <a class="btn primary" href="https://vercel.com/new" target="_blank" rel="noreferrer">
+              Deploy på Vercel
+            </a>
+            <a class="btn" href="./README.md">Læs README (i repo)</a>
+          </div>
+
+          <div class="section">
+            <h2>Vercel note</h2>
+            <p class="subtitle">
+              Denne side er deployet som statisk output. Selve LLM-kørslen foregår lokalt (Ollama). Et
+              næste skridt er at deploye en lille web-UI/API der kan læse fra Neon (uden Ollama), eller
+              skifte til en cloud-LLM for fuld online oplevelse.
+            </p>
+          </div>
+
+          <div class="foot">
+            Bygget iterativt med fokus på sikkerhed, small steps, og audit-log.
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
