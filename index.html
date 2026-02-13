@@ -79,10 +79,21 @@
 
       .card {
         border: 1px solid var(--border);
-        background: linear-gradient(180deg, rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0.02));
+        background: linear-gradient(180deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.02));
         border-radius: 18px;
         padding: 22px;
         backdrop-filter: blur(10px);
+        box-shadow:
+          0 12px 40px rgba(0, 0, 0, 0.35),
+          inset 0 1px 0 rgba(255, 255, 255, 0.08);
+      }
+
+      .card.accent {
+        border-color: rgba(124, 92, 255, 0.42);
+      }
+
+      .card.accent2 {
+        border-color: rgba(46, 229, 157, 0.35);
       }
 
       h1 {
@@ -124,6 +135,11 @@
         background: rgba(124, 92, 255, 0.18);
       }
 
+      .btn.good {
+        border-color: rgba(46, 229, 157, 0.6);
+        background: rgba(46, 229, 157, 0.16);
+      }
+
       .btn.ghost {
         background: transparent;
       }
@@ -163,6 +179,10 @@
         background: var(--cardbg);
         border-radius: 12px;
         margin-top: 10px;
+      }
+
+      .list li:hover {
+        border-color: rgba(255, 255, 255, 0.16);
       }
 
       .list li .text {
@@ -214,6 +234,51 @@
         transition: width 0.2s ease;
       }
 
+      .overlay {
+        position: fixed;
+        inset: 0;
+        display: none;
+        align-items: center;
+        justify-content: center;
+        background: rgba(0, 0, 0, 0.35);
+        backdrop-filter: blur(6px);
+        z-index: 50;
+      }
+
+      .overlay.show {
+        display: flex;
+      }
+
+      .countdown {
+        width: min(520px, 92vw);
+        border-radius: 22px;
+        border: 1px solid rgba(255, 255, 255, 0.16);
+        background: linear-gradient(180deg, rgba(255, 255, 255, 0.10), rgba(255, 255, 255, 0.04));
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.45);
+        padding: 24px;
+        text-align: center;
+      }
+
+      .countdownNum {
+        font-size: 74px;
+        font-weight: 800;
+        letter-spacing: -0.03em;
+        margin: 6px 0;
+      }
+
+      .countdownSmall {
+        margin: 0;
+        font-size: 14px;
+        color: var(--muted);
+      }
+
+      canvas#confetti {
+        position: fixed;
+        inset: 0;
+        pointer-events: none;
+        z-index: 60;
+      }
+
       .split {
         display: grid;
         grid-template-columns: 1fr 1fr;
@@ -239,9 +304,9 @@
       </header>
 
       <div class="grid">
-        <div class="card">
+        <div class="card accent">
           <h2>Dagens Fokus Trio</h2>
-          <p>Klik på en linje for at redigere. Gemmes lokalt i din browser.</p>
+          <p>Klik på en linje for at redigere. Gemmes lokalt i din browser (så du ser dem igen ved refresh).</p>
 
           <ul class="list" id="focus-list"></ul>
 
@@ -264,13 +329,17 @@
 
             <div>
               <h2>Ta-Da (fuldført i dag)</h2>
-              <p>Små sejre tæller. Gemmes lokalt.</p>
+              <p>Små sejre tæller. Skriv direkte herunder, eller flyt en To-Do til Ta-Da. Gemmes lokalt.</p>
+              <div class="row" style="margin-top: 10px">
+                <input class="input" id="tada-input" placeholder="Tilføj en Ta-Da succes..." />
+                <button class="btn good" id="tada-add">Tilføj</button>
+              </div>
               <ul class="list" id="tada-list"></ul>
             </div>
           </div>
         </div>
 
-        <div class="card">
+        <div class="card accent2">
           <h2>Tidsblok</h2>
           <p>Vælg en blok. Start/stop fungerer i fanen (ingen push-notifications endnu).</p>
 
@@ -309,6 +378,15 @@
       </div>
     </div>
 
+    <div class="overlay" id="celebrate-overlay" aria-hidden="true">
+      <div class="countdown">
+        <div class="badge">Fejring</div>
+        <div class="countdownNum" id="countdown-num">3</div>
+        <p class="countdownSmall">3210… konfetti</p>
+      </div>
+    </div>
+    <canvas id="confetti"></canvas>
+
     <script>
       const STORAGE = {
         focus: 'mp_focus_trio_v0',
@@ -344,6 +422,53 @@
 
       function uid() {
         return Math.random().toString(16).slice(2) + Date.now().toString(16);
+      }
+
+      let audioCtx = null;
+
+      function ensureAudio() {
+        if (!audioCtx) {
+          const Ctx = window.AudioContext || window.webkitAudioContext;
+          if (Ctx) audioCtx = new Ctx();
+        }
+        if (audioCtx && audioCtx.state === 'suspended') {
+          audioCtx.resume();
+        }
+      }
+
+      function tone(freq, durationMs, type, gainValue) {
+        ensureAudio();
+        if (!audioCtx) return;
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = type;
+        osc.frequency.value = freq;
+        gain.gain.value = 0.0001;
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+
+        const now = audioCtx.currentTime;
+        gain.gain.setValueAtTime(0.0001, now);
+        gain.gain.exponentialRampToValueAtTime(gainValue, now + 0.01);
+        gain.gain.exponentialRampToValueAtTime(0.0001, now + durationMs / 1000);
+
+        osc.start(now);
+        osc.stop(now + durationMs / 1000 + 0.02);
+      }
+
+      function sfxClick() {
+        tone(520, 60, 'square', 0.06);
+      }
+
+      function sfxSuccess() {
+        tone(523.25, 80, 'sine', 0.07);
+        setTimeout(() => tone(659.25, 90, 'sine', 0.07), 90);
+        setTimeout(() => tone(783.99, 110, 'sine', 0.07), 200);
+      }
+
+      function sfxCountdown(n) {
+        const base = 240 + n * 80;
+        tone(base, 90, 'triangle', 0.06);
       }
 
       const focusDefaults = [
@@ -384,6 +509,119 @@
         });
       }
 
+      function addTada(text) {
+        const t = String(text || '').trim();
+        if (!t) return;
+        const tadas = loadJSON(STORAGE.tadas, []);
+        tadas.unshift({ id: uid(), text: t, at: new Date().toISOString() });
+        saveJSON(STORAGE.tadas, tadas);
+        renderTadas();
+        celebrate();
+      }
+
+      let confetti = {
+        running: false,
+        particles: [],
+        raf: null,
+      };
+
+      function confettiStart(durationMs) {
+        const canvas = document.getElementById('confetti');
+        const ctx = canvas.getContext('2d');
+        const dpr = window.devicePixelRatio || 1;
+
+        function resize() {
+          canvas.width = Math.floor(window.innerWidth * dpr);
+          canvas.height = Math.floor(window.innerHeight * dpr);
+          canvas.style.width = window.innerWidth + 'px';
+          canvas.style.height = window.innerHeight + 'px';
+          ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+        }
+
+        resize();
+        window.addEventListener('resize', resize, { passive: true });
+
+        const colors = ['#7c5cff', '#2ee59d', '#ffd166', '#ff6b6b', '#4cc9f0'];
+        const count = 180;
+        confetti.particles = Array.from({ length: count }).map(() => ({
+          x: window.innerWidth * Math.random(),
+          y: -20 - Math.random() * window.innerHeight * 0.2,
+          w: 6 + Math.random() * 6,
+          h: 6 + Math.random() * 10,
+          vx: -2 + Math.random() * 4,
+          vy: 2 + Math.random() * 5,
+          rot: Math.random() * Math.PI,
+          vr: -0.2 + Math.random() * 0.4,
+          color: colors[Math.floor(Math.random() * colors.length)],
+          alpha: 0.9,
+        }));
+
+        const start = performance.now();
+        confetti.running = true;
+
+        function step(now) {
+          ctx.clearRect(0, 0, window.innerWidth, window.innerHeight);
+          confetti.particles.forEach((p) => {
+            p.vy += 0.03;
+            p.x += p.vx;
+            p.y += p.vy;
+            p.rot += p.vr;
+            if (p.y > window.innerHeight + 40) {
+              p.y = -30;
+              p.x = window.innerWidth * Math.random();
+              p.vy = 2 + Math.random() * 5;
+            }
+            ctx.save();
+            ctx.globalAlpha = p.alpha;
+            ctx.translate(p.x, p.y);
+            ctx.rotate(p.rot);
+            ctx.fillStyle = p.color;
+            ctx.fillRect(-p.w / 2, -p.h / 2, p.w, p.h);
+            ctx.restore();
+          });
+
+          if (now - start < durationMs) {
+            confetti.raf = requestAnimationFrame(step);
+          } else {
+            confettiStop();
+          }
+        }
+
+        confetti.raf = requestAnimationFrame(step);
+      }
+
+      function confettiStop() {
+        confetti.running = false;
+        if (confetti.raf) cancelAnimationFrame(confetti.raf);
+        confetti.raf = null;
+        const canvas = document.getElementById('confetti');
+        const ctx = canvas.getContext('2d');
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+      }
+
+      async function celebrate() {
+        const overlay = document.getElementById('celebrate-overlay');
+        const num = document.getElementById('countdown-num');
+        if (!overlay || !num) return;
+        if (overlay.classList.contains('show')) return;
+
+        overlay.classList.add('show');
+        overlay.setAttribute('aria-hidden', 'false');
+
+        for (let n = 3; n >= 0; n--) {
+          num.textContent = String(n);
+          if (n > 0) sfxCountdown(n);
+          await new Promise((r) => setTimeout(r, 420));
+        }
+
+        overlay.classList.remove('show');
+        overlay.setAttribute('aria-hidden', 'true');
+
+        sfxSuccess();
+        confettiStart(1400);
+        setTimeout(confettiStop, 1600);
+      }
+
       function renderTodos() {
         const ul = document.getElementById('todo-list');
         const items = loadJSON(STORAGE.todos, []);
@@ -410,6 +648,7 @@
             saveJSON(STORAGE.tadas, tadas);
             renderTodos();
             renderTadas();
+            celebrate();
           });
 
           const del = document.createElement('button');
@@ -536,6 +775,7 @@
         });
 
         document.getElementById('todo-add').addEventListener('click', () => {
+          sfxClick();
           const input = document.getElementById('todo-input');
           const text = input.value.trim();
           if (!text) return;
@@ -546,12 +786,25 @@
           renderTodos();
         });
 
+        document.getElementById('tada-add').addEventListener('click', () => {
+          sfxClick();
+          const input = document.getElementById('tada-input');
+          const text = input.value;
+          input.value = '';
+          addTada(text);
+        });
+
+        document.getElementById('tada-input').addEventListener('keydown', (e) => {
+          if (e.key === 'Enter') document.getElementById('tada-add').click();
+        });
+
         document.getElementById('todo-input').addEventListener('keydown', (e) => {
           if (e.key === 'Enter') document.getElementById('todo-add').click();
         });
 
         document.querySelectorAll('button[data-seconds]').forEach((btn) => {
           btn.addEventListener('click', () => {
+            sfxClick();
             stopTimer();
             const secs = Number(btn.getAttribute('data-seconds'));
             const label = String(btn.getAttribute('data-label') || 'Tidsblok');
@@ -563,8 +816,18 @@
           });
         });
 
-        document.getElementById('timer-start').addEventListener('click', startTimer);
-        document.getElementById('timer-reset').addEventListener('click', resetTimer);
+        document.getElementById('timer-start').addEventListener('click', () => {
+          sfxClick();
+          startTimer();
+        });
+        document.getElementById('timer-reset').addEventListener('click', () => {
+          sfxClick();
+          resetTimer();
+        });
+
+        document.body.addEventListener('pointerdown', () => {
+          ensureAudio();
+        }, { once: true });
       });
     </script>
   </body>
