@@ -11,12 +11,12 @@
     <style>
       :root {
         --bg: #0b1020;
-        --card: #111a33;
         --text: #e8eeff;
         --muted: #a9b5d3;
         --accent: #7c5cff;
         --accent2: #2ee59d;
         --border: rgba(255, 255, 255, 0.08);
+        --cardbg: rgba(255, 255, 255, 0.04);
       }
 
       * {
@@ -44,15 +44,35 @@
         padding: 48px 18px;
       }
 
-      .hero {
+      header {
+        display: flex;
+        justify-content: space-between;
+        gap: 12px;
+        align-items: baseline;
+        margin-bottom: 18px;
+      }
+
+      .greeting {
+        margin: 0;
+        font-size: 18px;
+        color: var(--muted);
+      }
+
+      .date {
+        margin: 0;
+        font-size: 13px;
+        color: var(--muted);
+      }
+
+      .grid {
         display: grid;
-        grid-template-columns: 1.2fr 0.8fr;
+        grid-template-columns: 1.1fr 0.9fr;
         gap: 18px;
         align-items: start;
       }
 
-      @media (max-width: 860px) {
-        .hero {
+      @media (max-width: 900px) {
+        .grid {
           grid-template-columns: 1fr;
         }
       }
@@ -65,84 +85,38 @@
         backdrop-filter: blur(10px);
       }
 
-      .title {
+      h1 {
         margin: 0;
-        font-size: 38px;
+        font-size: 28px;
         letter-spacing: -0.02em;
       }
 
-      .subtitle {
-        margin: 12px 0 0;
-        color: var(--muted);
-        font-size: 16px;
-      }
-
-      .pillrow {
-        margin-top: 16px;
-        display: flex;
-        flex-wrap: wrap;
-        gap: 10px;
-      }
-
-      .pill {
-        border: 1px solid var(--border);
-        background: rgba(255, 255, 255, 0.04);
-        color: var(--text);
-        border-radius: 999px;
-        padding: 8px 12px;
-        font-size: 13px;
-      }
-
-      .pill strong {
-        color: var(--accent2);
-        font-weight: 650;
-      }
-
-      .section {
-        margin-top: 16px;
-      }
-
       h2 {
-        font-size: 16px;
         margin: 0 0 10px;
+        font-size: 15px;
       }
 
-      ul {
-        margin: 0;
-        padding-left: 18px;
+      p {
+        margin: 10px 0 0;
         color: var(--muted);
+        font-size: 14px;
       }
 
-      code {
-        background: rgba(0, 0, 0, 0.35);
-        border: 1px solid var(--border);
-        padding: 2px 6px;
-        border-radius: 8px;
-        color: var(--text);
-      }
-
-      pre {
-        background: rgba(0, 0, 0, 0.35);
-        border: 1px solid var(--border);
-        padding: 12px;
-        border-radius: 12px;
-        overflow: auto;
-        color: var(--text);
-      }
-
-      .cta {
-        display: grid;
+      .row {
+        display: flex;
         gap: 10px;
+        flex-wrap: wrap;
       }
 
       .btn {
-        display: inline-block;
-        text-decoration: none;
+        appearance: none;
         border-radius: 12px;
         padding: 10px 12px;
         border: 1px solid var(--border);
         background: rgba(255, 255, 255, 0.04);
         color: var(--text);
+        cursor: pointer;
+        font: inherit;
       }
 
       .btn.primary {
@@ -150,16 +124,51 @@
         background: rgba(124, 92, 255, 0.18);
       }
 
-      .foot {
-        margin-top: 18px;
-        color: var(--muted);
-        font-size: 13px;
+      .btn.ghost {
+        background: transparent;
       }
 
-      .kicker {
-        font-size: 13px;
+      .btn:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+      }
+
+      .input {
+        width: 100%;
+        border-radius: 12px;
+        border: 1px solid var(--border);
+        background: rgba(0, 0, 0, 0.25);
+        color: var(--text);
+        padding: 10px 12px;
+        font: inherit;
+      }
+
+      .muted {
         color: var(--muted);
-        margin-top: 12px;
+      }
+
+      .list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+      }
+
+      .list li {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 10px;
+        padding: 10px 10px;
+        border: 1px solid var(--border);
+        background: var(--cardbg);
+        border-radius: 12px;
+        margin-top: 10px;
+      }
+
+      .list li .text {
+        min-width: 0;
+        flex: 1;
+        word-break: break-word;
       }
 
       .badge {
@@ -172,103 +181,391 @@
         color: var(--muted);
       }
 
-      .grid2 {
+      .timer {
+        display: grid;
+        gap: 10px;
+      }
+
+      .timerbox {
+        border: 1px solid var(--border);
+        background: rgba(0, 0, 0, 0.22);
+        border-radius: 14px;
+        padding: 12px;
+      }
+
+      .timerdisplay {
+        font-size: 26px;
+        font-weight: 700;
+        letter-spacing: 0.02em;
+      }
+
+      .bar {
+        height: 10px;
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.08);
+        overflow: hidden;
+        margin-top: 10px;
+      }
+
+      .bar > div {
+        height: 100%;
+        width: 0%;
+        background: var(--accent2);
+        transition: width 0.2s ease;
+      }
+
+      .split {
         display: grid;
         grid-template-columns: 1fr 1fr;
         gap: 12px;
       }
 
-      @media (max-width: 860px) {
-        .grid2 {
+      @media (max-width: 900px) {
+        .split {
           grid-template-columns: 1fr;
         }
-      }
-
-      .note {
-        border-left: 3px solid rgba(124, 92, 255, 0.6);
-        padding-left: 12px;
-        color: var(--muted);
-      }
-
-      .accent {
-        color: var(--accent2);
       }
     </style>
   </head>
   <body>
     <div class="wrap">
-      <div class="hero">
+      <header>
+        <div>
+          <div class="badge">v0 (static demo)</div>
+          <h1>MinProduktivitetsApp</h1>
+          <p class="greeting" id="greeting">Goddag</p>
+        </div>
+        <p class="date" id="date"></p>
+      </header>
+
+      <div class="grid">
         <div class="card">
-          <div class="badge">v0 (work in progress)</div>
-          <h1 class="title">MinProduktivitetsApp</h1>
-          <p class="subtitle">
-            En lokal-first produktivitetsapp med audit-log (events), Neon (Postgres) og lokal LLM via
-            Ollama. Målet er at skabe en "Hvis jeg kun har 1 time" plan der er konkret, skarp og
-            brugbar.
-          </p>
+          <h2>Dagens Fokus Trio</h2>
+          <p>Klik på en linje for at redigere. Gemmes lokalt i din browser.</p>
 
-          <div class="pillrow">
-            <div class="pill"><strong>Data</strong>: Neon (Postgres)</div>
-            <div class="pill"><strong>LLM</strong>: Ollama (lokalt)</div>
-            <div class="pill"><strong>Log</strong>: events (audit)</div>
-            <div class="pill"><strong>Scope</strong>: MVP i små, sikre trin</div>
+          <ul class="list" id="focus-list"></ul>
+
+          <div style="margin-top: 12px" class="row">
+            <button class="btn ghost" id="focus-reset">Nulstil</button>
           </div>
 
-          <div class="section">
-            <h2>Hvad er klar allerede?</h2>
-            <div class="grid2">
-              <div class="note">
-                <div><span class="accent">Backend runner</span> (lokalt)</div>
-                <div>
-                  Scriptet <code>app/backend/llm_plan.py</code> henter dagens fokus + to-do’s fra Neon,
-                  kalder Ollama og logger svaret som <code>LLM_PLAN_GENERATED</code>.
-                </div>
+          <div style="margin-top: 18px" class="split">
+            <div>
+              <h2>Min To-Do (lokal v0)</h2>
+              <p>Tilføj opgaver. Markér færdig for at flytte til Ta-Da.</p>
+
+              <div class="row" style="margin-top: 10px">
+                <input class="input" id="todo-input" placeholder="Tilføj en opgave..." />
+                <button class="btn primary" id="todo-add">Tilføj</button>
               </div>
-              <div class="note">
-                <div><span class="accent">Docs</span></div>
-                <div>
-                  Se projektets docs for vision, data model, token budget og working agreement.
-                </div>
-              </div>
+
+              <ul class="list" id="todo-list"></ul>
             </div>
-          </div>
 
-          <div class="section">
-            <h2>Kør lokalt</h2>
-            <pre><code>cd app/backend
-python -m venv .venv
-source .venv/bin/activate
-pip install -r requirements.txt
-python llm_plan.py</code></pre>
-            <div class="kicker">
-              Kræver at du har sat <code>DATABASE_URL</code> i <code>.env</code> og at Ollama kører lokalt.
+            <div>
+              <h2>Ta-Da (fuldført i dag)</h2>
+              <p>Små sejre tæller. Gemmes lokalt.</p>
+              <ul class="list" id="tada-list"></ul>
             </div>
           </div>
         </div>
 
         <div class="card">
-          <h2>Næste skridt (online)</h2>
-          <div class="cta">
-            <a class="btn primary" href="https://vercel.com/new" target="_blank" rel="noreferrer">
-              Deploy på Vercel
-            </a>
-            <a class="btn" href="./README.md">Læs README (i repo)</a>
+          <h2>Tidsblok</h2>
+          <p>Vælg en blok. Start/stop fungerer i fanen (ingen push-notifications endnu).</p>
+
+          <div class="timer">
+            <div class="row">
+              <button class="btn" data-seconds="600" data-label="10 min Fokus">10m Fokus</button>
+              <button class="btn" data-seconds="1500" data-label="25 min Pomodoro">25m Pomodoro</button>
+              <button class="btn" data-seconds="3000" data-label="50 min Dybde">50m Dybde</button>
+              <button class="btn" data-seconds="600" data-label="10 min Pause">10m Pause</button>
+            </div>
+
+            <div class="timerbox">
+              <div class="muted" id="timer-label">Vælg blok…</div>
+              <div class="timerdisplay" id="timer-display">00:00</div>
+              <div class="bar"><div id="timer-bar"></div></div>
+            </div>
+
+            <div class="row">
+              <button class="btn primary" id="timer-start" disabled>Start</button>
+              <button class="btn" id="timer-reset" disabled>Nulstil</button>
+            </div>
           </div>
 
-          <div class="section">
-            <h2>Vercel note</h2>
-            <p class="subtitle">
-              Denne side er deployet som statisk output. Selve LLM-kørslen foregår lokalt (Ollama). Et
-              næste skridt er at deploye en lille web-UI/API der kan læse fra Neon (uden Ollama), eller
-              skifte til en cloud-LLM for fuld online oplevelse.
+          <div style="margin-top: 18px">
+            <h2>"Hvis jeg kun har 1 time" (online v0)</h2>
+            <p>
+              LLM-planlægning kører lokalt lige nu (Ollama). Den næste online iteration er enten:
+              (a) en lille API der læser fra Neon, eller (b) cloud-LLM.
             </p>
-          </div>
-
-          <div class="foot">
-            Bygget iterativt med fokus på sikkerhed, small steps, og audit-log.
+            <div class="row" style="margin-top: 10px">
+              <a class="btn primary" href="https://vercel.com/new" target="_blank" rel="noreferrer">Deploy på Vercel</a>
+              <a class="btn" href="https://github.com/web2journalist-star/MinProduktivitetsApp" target="_blank" rel="noreferrer">Repo på GitHub</a>
+            </div>
           </div>
         </div>
       </div>
     </div>
+
+    <script>
+      const STORAGE = {
+        focus: 'mp_focus_trio_v0',
+        todos: 'mp_todos_v0',
+        tadas: 'mp_tadas_v0',
+      };
+
+      function fmtDate(now) {
+        return now.toLocaleDateString('da-DK', { weekday: 'long', day: 'numeric', month: 'long' });
+      }
+
+      function greeting(now) {
+        const h = now.getHours();
+        if (h < 5 || h >= 22) return 'Godnat';
+        if (h < 10) return 'Godmorgen';
+        if (h < 14) return 'Goddag';
+        if (h < 18) return 'Godeftermiddag';
+        return 'Godaften';
+      }
+
+      function loadJSON(key, fallback) {
+        try {
+          const raw = localStorage.getItem(key);
+          return raw ? JSON.parse(raw) : fallback;
+        } catch {
+          return fallback;
+        }
+      }
+
+      function saveJSON(key, value) {
+        localStorage.setItem(key, JSON.stringify(value));
+      }
+
+      function uid() {
+        return Math.random().toString(16).slice(2) + Date.now().toString(16);
+      }
+
+      const focusDefaults = [
+        'Prioritet 1: [Klik for at skrive]',
+        'Prioritet 2: [Klik for at skrive]',
+        'Prioritet 3: [Klik for at skrive]',
+      ];
+
+      function renderFocus() {
+        const ul = document.getElementById('focus-list');
+        const items = loadJSON(STORAGE.focus, focusDefaults);
+        ul.innerHTML = '';
+        items.forEach((text, idx) => {
+          const li = document.createElement('li');
+          const span = document.createElement('div');
+          span.className = 'text';
+          span.textContent = text;
+          span.style.cursor = 'text';
+          span.addEventListener('click', () => {
+            const input = document.createElement('input');
+            input.className = 'input';
+            input.value = text;
+            input.addEventListener('blur', () => {
+              const next = input.value.trim() || focusDefaults[idx];
+              const updated = loadJSON(STORAGE.focus, focusDefaults);
+              updated[idx] = next;
+              saveJSON(STORAGE.focus, updated);
+              renderFocus();
+            });
+            input.addEventListener('keydown', (e) => {
+              if (e.key === 'Enter') input.blur();
+            });
+            li.replaceChild(input, span);
+            input.focus();
+          });
+          li.appendChild(span);
+          ul.appendChild(li);
+        });
+      }
+
+      function renderTodos() {
+        const ul = document.getElementById('todo-list');
+        const items = loadJSON(STORAGE.todos, []);
+        ul.innerHTML = '';
+        items.forEach((t) => {
+          const li = document.createElement('li');
+          const text = document.createElement('div');
+          text.className = 'text';
+          text.textContent = t.text;
+
+          const actions = document.createElement('div');
+          actions.className = 'row';
+
+          const done = document.createElement('button');
+          done.className = 'btn primary';
+          done.textContent = 'Færdig';
+          done.addEventListener('click', () => {
+            const todos = loadJSON(STORAGE.todos, []);
+            const remaining = todos.filter((x) => x.id !== t.id);
+            saveJSON(STORAGE.todos, remaining);
+
+            const tadas = loadJSON(STORAGE.tadas, []);
+            tadas.unshift({ id: uid(), text: t.text, at: new Date().toISOString() });
+            saveJSON(STORAGE.tadas, tadas);
+            renderTodos();
+            renderTadas();
+          });
+
+          const del = document.createElement('button');
+          del.className = 'btn';
+          del.textContent = 'Slet';
+          del.addEventListener('click', () => {
+            const todos = loadJSON(STORAGE.todos, []);
+            saveJSON(
+              STORAGE.todos,
+              todos.filter((x) => x.id !== t.id)
+            );
+            renderTodos();
+          });
+
+          actions.appendChild(done);
+          actions.appendChild(del);
+          li.appendChild(text);
+          li.appendChild(actions);
+          ul.appendChild(li);
+        });
+      }
+
+      function renderTadas() {
+        const ul = document.getElementById('tada-list');
+        const items = loadJSON(STORAGE.tadas, []);
+        ul.innerHTML = '';
+        items.forEach((t) => {
+          const li = document.createElement('li');
+          const text = document.createElement('div');
+          text.className = 'text';
+          text.textContent = t.text;
+
+          const del = document.createElement('button');
+          del.className = 'btn';
+          del.textContent = 'Fjern';
+          del.addEventListener('click', () => {
+            const tadas = loadJSON(STORAGE.tadas, []);
+            saveJSON(
+              STORAGE.tadas,
+              tadas.filter((x) => x.id !== t.id)
+            );
+            renderTadas();
+          });
+
+          li.appendChild(text);
+          li.appendChild(del);
+          ul.appendChild(li);
+        });
+      }
+
+      let timer = {
+        interval: null,
+        selectedSeconds: 0,
+        remainingSeconds: 0,
+        label: 'Vælg blok…',
+      };
+
+      function formatMMSS(totalSeconds) {
+        const m = Math.floor(totalSeconds / 60);
+        const s = totalSeconds % 60;
+        return `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+      }
+
+      function renderTimer() {
+        document.getElementById('timer-label').textContent = timer.label;
+        document.getElementById('timer-display').textContent = formatMMSS(timer.remainingSeconds);
+        const pct =
+          timer.selectedSeconds > 0
+            ? ((timer.selectedSeconds - timer.remainingSeconds) / timer.selectedSeconds) * 100
+            : 0;
+        document.getElementById('timer-bar').style.width = `${Math.max(0, Math.min(100, pct))}%`;
+
+        document.getElementById('timer-start').disabled = timer.selectedSeconds <= 0;
+        document.getElementById('timer-reset').disabled = timer.selectedSeconds <= 0;
+      }
+
+      function stopTimer() {
+        if (timer.interval) {
+          clearInterval(timer.interval);
+          timer.interval = null;
+        }
+      }
+
+      function startTimer() {
+        if (timer.interval || timer.remainingSeconds <= 0) return;
+        const startBtn = document.getElementById('timer-start');
+        startBtn.textContent = 'Kører…';
+        startBtn.disabled = true;
+
+        timer.interval = setInterval(() => {
+          timer.remainingSeconds -= 1;
+          if (timer.remainingSeconds <= 0) {
+            stopTimer();
+            timer.remainingSeconds = 0;
+            document.getElementById('timer-start').textContent = 'Start';
+            renderTimer();
+            alert('Tidsblokken er færdig.');
+            return;
+          }
+          renderTimer();
+        }, 1000);
+      }
+
+      function resetTimer() {
+        stopTimer();
+        timer.remainingSeconds = timer.selectedSeconds;
+        document.getElementById('timer-start').textContent = 'Start';
+        renderTimer();
+      }
+
+      document.addEventListener('DOMContentLoaded', () => {
+        const now = new Date();
+        document.getElementById('greeting').textContent = `${greeting(now)}`;
+        document.getElementById('date').textContent = fmtDate(now);
+
+        renderFocus();
+        renderTodos();
+        renderTadas();
+        renderTimer();
+
+        document.getElementById('focus-reset').addEventListener('click', () => {
+          saveJSON(STORAGE.focus, focusDefaults);
+          renderFocus();
+        });
+
+        document.getElementById('todo-add').addEventListener('click', () => {
+          const input = document.getElementById('todo-input');
+          const text = input.value.trim();
+          if (!text) return;
+          const todos = loadJSON(STORAGE.todos, []);
+          todos.unshift({ id: uid(), text, at: new Date().toISOString() });
+          saveJSON(STORAGE.todos, todos);
+          input.value = '';
+          renderTodos();
+        });
+
+        document.getElementById('todo-input').addEventListener('keydown', (e) => {
+          if (e.key === 'Enter') document.getElementById('todo-add').click();
+        });
+
+        document.querySelectorAll('button[data-seconds]').forEach((btn) => {
+          btn.addEventListener('click', () => {
+            stopTimer();
+            const secs = Number(btn.getAttribute('data-seconds'));
+            const label = String(btn.getAttribute('data-label') || 'Tidsblok');
+            timer.selectedSeconds = secs;
+            timer.remainingSeconds = secs;
+            timer.label = label;
+            document.getElementById('timer-start').textContent = 'Start';
+            renderTimer();
+          });
+        });
+
+        document.getElementById('timer-start').addEventListener('click', startTimer);
+        document.getElementById('timer-reset').addEventListener('click', resetTimer);
+      });
+    </script>
   </body>
 </html>
