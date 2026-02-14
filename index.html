@@ -17,6 +17,8 @@
         --accent2: #2ee59d;
         --border: rgba(255, 255, 255, 0.08);
         --cardbg: rgba(255, 255, 255, 0.04);
+        --glass: rgba(255, 255, 255, 0.06);
+        --glass2: rgba(255, 255, 255, 0.03);
       }
 
       * {
@@ -52,6 +54,13 @@
         margin-bottom: 18px;
       }
 
+      .headerRight {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-end;
+        gap: 10px;
+      }
+
       .greeting {
         margin: 0;
         font-size: 18px;
@@ -79,13 +88,20 @@
 
       .card {
         border: 1px solid var(--border);
-        background: linear-gradient(180deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.02));
+        background: linear-gradient(180deg, var(--glass), var(--glass2));
         border-radius: 18px;
         padding: 22px;
-        backdrop-filter: blur(10px);
+        backdrop-filter: blur(14px);
         box-shadow:
           0 12px 40px rgba(0, 0, 0, 0.35),
           inset 0 1px 0 rgba(255, 255, 255, 0.08);
+      }
+
+      .card:hover {
+        border-color: rgba(255, 255, 255, 0.16);
+        box-shadow:
+          0 16px 52px rgba(0, 0, 0, 0.42),
+          inset 0 1px 0 rgba(255, 255, 255, 0.10);
       }
 
       .card.accent {
@@ -130,14 +146,38 @@
         font: inherit;
       }
 
+      .btn:hover {
+        border-color: rgba(255, 255, 255, 0.16);
+        transform: translateY(-1px);
+      }
+
+      .btn:active {
+        transform: translateY(0px);
+      }
+
+      .btn:focus-visible {
+        outline: none;
+        box-shadow:
+          0 0 0 3px rgba(124, 92, 255, 0.18),
+          0 0 0 1px rgba(124, 92, 255, 0.45);
+      }
+
       .btn.primary {
         border-color: rgba(124, 92, 255, 0.6);
         background: rgba(124, 92, 255, 0.18);
       }
 
+      .btn.primary:hover {
+        box-shadow: 0 0 0 1px rgba(124, 92, 255, 0.35), 0 10px 30px rgba(124, 92, 255, 0.12);
+      }
+
       .btn.good {
         border-color: rgba(46, 229, 157, 0.6);
         background: rgba(46, 229, 157, 0.16);
+      }
+
+      .btn.good:hover {
+        box-shadow: 0 0 0 1px rgba(46, 229, 157, 0.30), 0 10px 30px rgba(46, 229, 157, 0.10);
       }
 
       .btn.ghost {
@@ -157,6 +197,16 @@
         color: var(--text);
         padding: 10px 12px;
         font: inherit;
+      }
+
+      .input::placeholder {
+        color: rgba(169, 181, 211, 0.72);
+      }
+
+      .input:focus {
+        outline: none;
+        border-color: rgba(124, 92, 255, 0.45);
+        box-shadow: 0 0 0 3px rgba(124, 92, 255, 0.14);
       }
 
       .muted {
@@ -211,6 +261,10 @@
         background: rgba(0, 0, 0, 0.22);
         border-radius: 14px;
         padding: 12px;
+      }
+
+      .timerbox:hover {
+        border-color: rgba(255, 255, 255, 0.14);
       }
 
       .timerdisplay {
@@ -300,7 +354,12 @@
           <h1>MinProduktivitetsApp</h1>
           <p class="greeting" id="greeting">Goddag</p>
         </div>
-        <p class="date" id="date"></p>
+        <div class="headerRight">
+          <p class="date" id="date"></p>
+          <div class="row">
+            <button class="btn" id="celebrate-btn" type="button">Fejr / Konfetti</button>
+          </div>
+        </div>
       </header>
 
       <div class="grid">
@@ -392,6 +451,8 @@
         focus: 'mp_focus_trio_v0',
         todos: 'mp_todos_v0',
         tadas: 'mp_tadas_v0',
+        todoDraft: 'mp_todo_draft_v0',
+        tadaDraft: 'mp_tada_draft_v0',
       };
 
       function fmtDate(now) {
@@ -764,6 +825,41 @@
         document.getElementById('greeting').textContent = `${greeting(now)}`;
         document.getElementById('date').textContent = fmtDate(now);
 
+        const todoInput = document.getElementById('todo-input');
+        const todoAdd = document.getElementById('todo-add');
+        const tadaInput = document.getElementById('tada-input');
+        const tadaAdd = document.getElementById('tada-add');
+        const celebrateBtn = document.getElementById('celebrate-btn');
+
+        if (celebrateBtn) {
+          celebrateBtn.addEventListener('click', () => {
+            sfxClick();
+            celebrate();
+          });
+        }
+
+        if (todoInput) {
+          todoInput.value = loadJSON(STORAGE.todoDraft, '') || '';
+          todoInput.addEventListener('input', () => saveJSON(STORAGE.todoDraft, todoInput.value));
+          todoInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+              e.preventDefault();
+              if (todoAdd) todoAdd.click();
+            }
+          });
+        }
+
+        if (tadaInput) {
+          tadaInput.value = loadJSON(STORAGE.tadaDraft, '') || '';
+          tadaInput.addEventListener('input', () => saveJSON(STORAGE.tadaDraft, tadaInput.value));
+          tadaInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+              e.preventDefault();
+              if (tadaAdd) tadaAdd.click();
+            }
+          });
+        }
+
         renderFocus();
         renderTodos();
         renderTadas();
@@ -776,30 +872,24 @@
 
         document.getElementById('todo-add').addEventListener('click', () => {
           sfxClick();
-          const input = document.getElementById('todo-input');
-          const text = input.value.trim();
+          const el = document.getElementById('todo-input');
+          const text = el.value.trim();
           if (!text) return;
           const todos = loadJSON(STORAGE.todos, []);
           todos.unshift({ id: uid(), text, at: new Date().toISOString() });
           saveJSON(STORAGE.todos, todos);
-          input.value = '';
+          el.value = '';
+          saveJSON(STORAGE.todoDraft, '');
           renderTodos();
         });
 
         document.getElementById('tada-add').addEventListener('click', () => {
           sfxClick();
-          const input = document.getElementById('tada-input');
-          const text = input.value;
-          input.value = '';
+          const el = document.getElementById('tada-input');
+          const text = el.value;
+          el.value = '';
+          saveJSON(STORAGE.tadaDraft, '');
           addTada(text);
-        });
-
-        document.getElementById('tada-input').addEventListener('keydown', (e) => {
-          if (e.key === 'Enter') document.getElementById('tada-add').click();
-        });
-
-        document.getElementById('todo-input').addEventListener('keydown', (e) => {
-          if (e.key === 'Enter') document.getElementById('todo-add').click();
         });
 
         document.querySelectorAll('button[data-seconds]').forEach((btn) => {
